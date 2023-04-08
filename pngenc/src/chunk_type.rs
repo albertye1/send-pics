@@ -2,12 +2,12 @@
 use std::convert::TryFrom;
 use std::fmt;
 use std::str::FromStr;
-
-use crate::{Error, Result};
+use std::error::Error;
+use std::result::Result;
 
 /// A validated PNG chunk type. See the PNG spec for more details.
 /// http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub struct ChunkType {
     bytes:[u8;4]
 }
@@ -39,7 +39,7 @@ impl ChunkType {
     /// Returns the property state of the fourth byte as described in the PNG spec
     pub fn is_safe_to_copy(&self) -> bool {
         let safe_bit = self.bytes[3] & (1 << 5);
-        return safe_bit == 1;
+        return safe_bit >= 1;
     }
 
     /// Returns true if the reserved byte is valid and all four bytes are represented by the characters A-Z or a-z.
@@ -58,28 +58,28 @@ impl ChunkType {
 
     /// Valid bytes are represented by the characters A-Z or a-z
     pub fn is_valid_byte(byte: u8) -> bool {
-        return !(byte < ('A' as u8) || byte > ('Z' as u8) && byte < ('a' as u8) || byte > ('z' as u8));
+        return (byte >= ('A' as u8) && byte <= ('Z' as u8)) || (byte >= ('a' as u8) && byte <= ('z' as u8));
     }
 }
 
 impl TryFrom<[u8; 4]> for ChunkType {
-    type Error = Error;
-
-    fn try_from(bytes: [u8; 4]) -> Result<Self> {
+    type Error = &'static str;
+    fn try_from(bytes: [u8; 4]) -> Result<Self, Self::Error> {
         let ex = ChunkType {
             bytes: bytes
         };
-        if ChunkType::is_valid(&ex) {
-            return Ok(ex);
-        } else {
-            return Error!("Invalid Byte Array!"); // does this work? TODO
+        for byte in bytes {
+            if !ChunkType::is_valid_byte(byte) {
+                return Err("Invalid Byte Array!") // does this work? TODO
+            }
         }
+        Ok(ex)
     }
 }
 
 impl fmt::Display for ChunkType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!("{} {} {} {}", self.bytes[0], self.bytes[1], self.bytes[2], self.bytes[3])
+        write!(f, "{}{}{}{}", self.bytes[0] as char, self.bytes[1] as char, self.bytes[2] as char, self.bytes[3] as char)
     }
 }
 
@@ -88,35 +88,32 @@ impl std::error::Error for ChunkType {
 }
 
 impl FromStr for ChunkType {
-    type Err = Error;
+    type Err = &'static str;
 
-    fn from_str(s: &str) -> Result<Self> {
-        let arr: [u8; 4] = [0; 4];
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut arr: [u8; 4] = [0; 4];
         for i in 0..4 {
-            arr[i] = (s[i] as u8);
+            arr[i] = (s.as_bytes()[i]);
         }
 
-        let chunk = ChunkType {
-            bytes: arr;
-        }
-        
-        return arr as ChunkType;
+        let res = ChunkType::try_from(arr);
+        res
     }
 }
 
 impl PartialEq for ChunkType {
     fn eq(&self, other: &ChunkType) -> bool {
-        return (self.bytes[0] == other.bytes[0] && self.bytes[1] == other.bytes[1] && self.bytes[2] == other.bytes[2] && self.bytes[3] == other.bytes[3])
+        (self.bytes[0] == other.bytes[0] && self.bytes[1] == other.bytes[1] && self.bytes[2] == other.bytes[2] && self.bytes[3] == other.bytes[3])
     }
 }
 
 impl Eq for ChunkType {
-    fn eq(&self, other: &ChunkType) -> bool {
-        return (self.bytes[0] == other.bytes[0] && self.bytes[1] == other.bytes[1] && self.bytes[2] == other.bytes[2] && self.bytes[3] == other.bytes[3])
-    }
+    // fn eq(&self, other: &Self) -> bool {
+    //     return (self.bytes[0] == other.bytes[0] && self.bytes[1] == other.bytes[1] && self.bytes[2] == other.bytes[2] && self.bytes[3] == other.bytes[3])
+    // }
 }
 
-fn main() {
+fn main() {}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -214,5 +211,4 @@ mod tests {
         let _chunk_string = format!("{}", chunk_type_1);
         let _are_chunks_equal = chunk_type_1 == chunk_type_2;
     }
-}
 }
