@@ -72,14 +72,14 @@ impl TryFrom<[u8; 4]> for ChunkType {
         if ChunkType::is_valid(&ex) {
             return Ok(ex);
         } else {
-            todo!(); // how does boxing errors work!
+            return Error!("Invalid Byte Array!"); // does this work? TODO
         }
     }
 }
 
 impl fmt::Display for ChunkType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "skill issue")
+        write!("{} {} {} {}", self.bytes[0], self.bytes[1], self.bytes[2], self.bytes[3])
     }
 }
 
@@ -91,10 +91,30 @@ impl FromStr for ChunkType {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self> {
-        todo!()
+        let arr: [u8; 4] = [0; 4];
+        for i in 0..4 {
+            arr[i] = (s[i] as u8);
+        }
+
+        let chunk = ChunkType {
+            bytes: arr;
+        }
+        
+        return arr as ChunkType;
     }
 }
 
+impl PartialEq for ChunkType {
+    fn eq(&self, other: &ChunkType) -> bool {
+        return (self.bytes[0] == other.bytes[0] && self.bytes[1] == other.bytes[1] && self.bytes[2] == other.bytes[2] && self.bytes[3] == other.bytes[3])
+    }
+}
+
+impl Eq for ChunkType {
+    fn eq(&self, other: &ChunkType) -> bool {
+        return (self.bytes[0] == other.bytes[0] && self.bytes[1] == other.bytes[1] && self.bytes[2] == other.bytes[2] && self.bytes[3] == other.bytes[3])
+    }
+}
 
 fn main() {
 #[cfg(test)]
