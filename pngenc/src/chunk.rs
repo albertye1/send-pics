@@ -35,7 +35,7 @@ impl Chunk {
         &self.ctype
     }
 
-    fn data(&self) -> &[u8] {
+    pub fn data(&self) -> &[u8] {
         &self.data
     }
 
@@ -112,7 +112,7 @@ impl Display for Chunk {
     }
 }
 
-fn main() {}
+// fn main() {}
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -2,7 +2,6 @@
 use std::convert::TryFrom;
 use std::fmt;
 use std::str::FromStr;
-use std::error::Error;
 use std::result::Result;
 
 /// A validated PNG chunk type. See the PNG spec for more details.
@@ -70,7 +69,7 @@ impl TryFrom<[u8; 4]> for ChunkType {
         };
         for byte in bytes {
             if !ChunkType::is_valid_byte(byte) {
-                return Err("Invalid Byte Array!") // does this work? TODO
+                return Err("Invalid Byte Array!")
             }
         }
         Ok(ex)
@@ -81,10 +80,6 @@ impl fmt::Display for ChunkType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}{}{}{}", self.bytes[0] as char, self.bytes[1] as char, self.bytes[2] as char, self.bytes[3] as char)
     }
-}
-
-impl std::error::Error for ChunkType {
-    // do stuff here
 }
 
 impl FromStr for ChunkType {
@@ -103,14 +98,16 @@ impl FromStr for ChunkType {
 
 impl PartialEq for ChunkType {
     fn eq(&self, other: &ChunkType) -> bool {
-        (self.bytes[0] == other.bytes[0] && self.bytes[1] == other.bytes[1] && self.bytes[2] == other.bytes[2] && self.bytes[3] == other.bytes[3])
+        self.bytes[0] == other.bytes[0] && self.bytes[1] == other.bytes[1] && self.bytes[2] == other.bytes[2] && self.bytes[3] == other.bytes[3]
     }
 }
 
 impl Eq for ChunkType {
-    // fn eq(&self, other: &Self) -> bool {
-    //     return (self.bytes[0] == other.bytes[0] && self.bytes[1] == other.bytes[1] && self.bytes[2] == other.bytes[2] && self.bytes[3] == other.bytes[3])
-    // }
+    /*
+    fn eq(&self, other: &ChunkType) -> bool {
+        return (self.bytes[0] == other.bytes[0] && self.bytes[1] == other.bytes[1] && self.bytes[2] == other.bytes[2] && self.bytes[3] == other.bytes[3])
+    }
+    */
 }
 
 fn main() {}
