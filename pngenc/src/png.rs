@@ -1,3 +1,4 @@
+use std::convert::TryInto;
 use crate::chunk::Chunk;
 // signature: 137 80 78 71 13 10 26 10
 const STANDARD_HEADER:[u8; 8] = [137, 80, 78, 71, 13, 10, 26, 10]; 
@@ -30,6 +31,14 @@ impl Png {
         } 
         self.chunks.push(chunk);
         self.chunk_end.push(self.info.len() as i32 - 1);
+    }
+
+    pub fn header(&self) -> &[u8; 8] {
+        &STANDARD_HEADER;
+    }
+
+    pub fn chunks(&self) -> &[Chunk] {
+        
     }
 }
 
