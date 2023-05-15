@@ -16,19 +16,24 @@ pub struct Chunk {
     crc: u32
 }
 
+// single chunk of a PNG file
 impl Chunk {
+    // create a new chunk -- needs the type of the chunk and data in the chunk.
     pub fn new(chunk_type: ChunkType, data: Vec<u8>) -> Chunk {
         let crc: Crc<u32> = Crc::<u32>::new(&CRC_32_ISO_HDLC);
         let mut crc_data: Vec<u8> = Vec::new();
         crc_data.append(&mut chunk_type.bytes().to_vec());
         crc_data.append(&mut data.clone());
-        Chunk {ctype: chunk_type, data: data.clone(), length: data.len() as u32, crc: crc.checksum( &crc_data)}
+        Chunk {ctype: chunk_type, data: data.clone(), length: data.len() as u32, 
+            crc: crc.checksum( &crc_data)}
     }
 
+    // length of chunk
     pub fn length(&self) -> u32 {
         self.length as u32
     }
 
+    // type of chunk
     pub fn chunk_type(&self) -> &ChunkType {
         &self.ctype
     }

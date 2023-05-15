@@ -53,8 +53,8 @@ impl Png {
         let mut info = Self::STANDARD_HEADER.to_vec();
         let chunks_cpy: Vec<Chunk> = self.chunks.clone();
         for c in chunks_cpy {
-            for u in c.data() {
-                info.push(*u);
+            for u in c.as_bytes() {
+                info.push(u);
             }
         }
         info
@@ -65,7 +65,27 @@ impl TryFrom<&[u8]> for Png {
     type Error = Error;
 
     fn try_from(bytes: &[u8]) -> Result<Png> {
-        todo!()
+        for i in 0..8 {
+            if bytes[i] != Png::STANDARD_HEADER[i] {
+                return Err("Invalid header".into());
+            }
+        }
+        let mut i = 8;
+        let mut chunks: Vec<Chunk> = Vec::new();
+        while i < bytes.len() {
+            let len = u32::from_be_bytes([bytes[i], bytes[i + 1], bytes[i + 2], bytes[i + 3]]);
+            let value = &bytes[i..i + 12 + (len as usize)];
+            let c_res = Chunk::try_from(value);
+            let chunk;
+            if c_res.is_err() {
+                return Err("Bad chunk!".into());
+            } else {
+                chunk = c_res.unwrap();
+            }
+            chunks.push(chunk);
+            i += (12 + len as usize);
+        }
+        Ok(Png::from_chunks(chunks))
     }
 }
 
