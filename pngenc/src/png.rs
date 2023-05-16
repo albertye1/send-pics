@@ -1,5 +1,6 @@
 // use std::convert::TryInto;
 use crate::chunk::Chunk;
+use crate::chunk::vec_to_string;
 use crate::chunk_type::ChunkType;
 use std::fmt;
 use std::str::FromStr;
@@ -91,7 +92,12 @@ impl TryFrom<&[u8]> for Png {
 
 impl fmt::Display for Png {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        let chunks = self.chunks.clone();
+        let mut s = vec_to_string(&chunks[0].data().to_vec());
+        for c in &chunks[1..chunks.len()] {
+            s = format!("{}, {}", s, vec_to_string(&c.data().to_vec()));
+        }
+        write!(f, "{}", s)
     }
 }
 
