@@ -1,7 +1,7 @@
 // use std::convert::TryInto;
-use crate::chunk::Chunk;
+pub use crate::chunk::Chunk;
 use crate::chunk::vec_to_string;
-use crate::chunk_type::ChunkType;
+pub use crate::chunk_type::ChunkType;
 use std::fmt;
 use std::str::FromStr;
 use crate::{Result, Error};
