@@ -3,7 +3,6 @@ use std::convert::TryFrom;
 use std::fmt::Display;
 use std::fmt::Formatter;
 // use std::result::Result;
-use std::str;
 use crc::{Crc, CRC_32_ISO_HDLC};
 use crate::chunk_type::ChunkType;
 use crate::{Error, Result};

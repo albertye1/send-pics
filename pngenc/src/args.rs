@@ -1,14 +1,6 @@
 use std::env;
 use std::path::PathBuf;
 
-// generic enum encompassing all argument types
-pub enum GenericArgs {
-    Encode(EncodeArgs),
-    Decode(DecodeArgs),
-    Remove(RemoveArgs),
-    Print(PrintArgs),
-}
-
 // arguments for encode function
 pub struct EncodeArgs {
     path: PathBuf,
@@ -17,7 +9,25 @@ pub struct EncodeArgs {
     output_file: String
 }
 
+pub struct DecodeArgs {
+    path: PathBuf,
+    chunk_type: String
+}
+
+pub struct RemoveArgs {
+    path: PathBuf,
+    chunk_type: String
+}
+
+pub struct PrintArgs {
+    path: PathBuf
+}
+
 impl EncodeArgs {
+    pub fn new(path: PathBuf, chunk_type: String, msg: String, output_file: String) -> EncodeArgs {
+        EncodeArgs {path, chunk_type, msg, output_file}
+    }
+
     pub fn path(&self) -> PathBuf {
         self.path.clone()
     }
@@ -33,18 +43,4 @@ impl EncodeArgs {
     pub fn output_file(&self) -> String {
         self.output_file.clone()
     }
-}
-
-pub struct DecodeArgs {
-    path: PathBuf,
-    chunk_type: String
-}
-
-pub struct RemoveArgs {
-    path: PathBuf,
-    chunk_type: String
-}
-
-pub struct PrintArgs {
-    path: PathBuf
 }
