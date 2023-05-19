@@ -6,7 +6,7 @@ pub struct EncodeArgs {
     path: PathBuf,
     chunk_type: String,
     msg: String,
-    output_file: String
+    output_file: PathBuf
 }
 
 pub struct DecodeArgs {
@@ -24,7 +24,7 @@ pub struct PrintArgs {
 }
 
 impl EncodeArgs {
-    pub fn new(path: PathBuf, chunk_type: String, msg: String, output_file: String) -> EncodeArgs {
+    pub fn new(path: PathBuf, chunk_type: String, msg: String, output_file: PathBuf) -> EncodeArgs {
         EncodeArgs {path, chunk_type, msg, output_file}
     }
 
@@ -40,7 +40,45 @@ impl EncodeArgs {
         self.msg.clone()
     }
 
-    pub fn output_file(&self) -> String {
+    pub fn output_file(&self) -> PathBuf {
         self.output_file.clone()
+    }
+}
+
+impl DecodeArgs {
+    pub fn new(path: PathBuf, chunk_type: String) -> DecodeArgs {
+        DecodeArgs {path, chunk_type}
+    }
+
+    pub fn path(&self) -> PathBuf {
+        self.path.clone()
+    }
+
+    pub fn chunk_type(&self) -> String {
+        self.chunk_type.clone()
+    }
+}
+
+impl RemoveArgs {
+    pub fn new(path: PathBuf, chunk_type: String) -> RemoveArgs {
+        RemoveArgs {path, chunk_type}
+    }
+
+    pub fn path(&self) -> PathBuf {
+        self.path.clone()
+    }
+
+    pub fn chunk_type(&self) -> String {
+        self.chunk_type.clone()
+    }
+}
+
+impl PrintArgs {
+    pub fn new(path: PathBuf) -> PrintArgs {
+        PrintArgs {path}
+    }
+
+    pub fn path(&self) -> PathBuf {
+        self.path.clone()
     }
 }
